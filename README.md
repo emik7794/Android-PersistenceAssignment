@@ -1,4 +1,4 @@
-# AdaptersAssignment | Android Reddit Reader - Step 3
+# Persistence Assignment | Android Reddit Reader - Step 6
 
 ## Contexto
 
@@ -6,22 +6,48 @@ El presente curso ha sido diseñado por [Diego Mercado](https://github.com/merca
 
 ## Objetivos
 
-* Implementar una [ListView](https://developer.android.com/reference/android/widget/ListView) que obtenga su contenido desde un propio [ArrayAdapter](https://developer.android.com/reference/android/widget/ArrayAdapter.html) 
+* Implementar una pequeña base de datos SQLite 
+
+## Pre-Requsitos
+
+* Haber completado la actividad de [webservices_assignment](https://github.com/mercadodiego/RedditReader/tree/webservices_assignment) 
 
 ## Enunciado
 
-1. Descargar el tag "adapters_assignment" del repositorio https://github.com/mercadodiego/RedditReader
-2. La clase `ar.edu.unc.famaf.redditreader.model.PostModel` representa un Post en Reddit. La misma ya está creada pero vacía, debe agregar los atributos relativos al título, autor, fecha de creación, numero de comentarios e imagen de *preview/thumbnail* con sus correspondientes *setter/getter*
-3. Implementar el método `List<PostModel> getTopPosts()` de la clase `ar.edu.unc.famaf.redditreader.backend.Backend`. El mismo debe devolver siempre 5 instancias de `PostModel` con contenido falso o *dummy* 
-4. Crear la clase `ar.edu.unc.famaf.redditreader.ui.PostAdapter` que extienda de `android.widget.ArrayAdapter` e re-implementar los métodos necesarios
-5. `NewsActivityFragment` debe mostrar una [ListView](https://developer.android.com/reference/android/widget/ListView) que ocupe todo su espacio y debe desplegar el contenido de cada uno de los Posts siguiendo el diseño implementado en la actividad previa de [LayoutAssignment](https://github.com/mercadodiego/RedditReader/blob/layout_assignment/README.md). Tener en cuenta que el título debe poder siempre mostrarse y la altura de cada fila debe ajustarse para permitirlo
-6. Implementar un *ViewHolder* en nuestra clase `ar.edu.unc.famaf.redditreader.ui.PostAdapter` para mejorar la performance de la [ListView](https://developer.android.com/reference/android/widget/ListView). Mayor información en: [Hold View Objects in a View Holder](https://developer.android.com/training/improving-layouts/smooth-scrolling.html#ViewHolder)
+1. La clase `ar.edu.unc.famaf.redditreader.backend.GetTopPostsTask` debe implementar ahora el siguiente comportamiento
+ 1. Invocar al servicio REST de Reddit para obtener los primeros 50 TOP posts
+ 2. Persistir los resultados en una base de datos interna 
+ 3. Devolver los resultados desde la base de datos interna
+ 4. En caso de que no haya conexión a internet, se deben devolver los últimos resultados obtenidos desde la base de datos interna 
+2. La base de datos interna debe estar implementada en una nueva clase: `ar.edu.unc.famaf.redditreader.backend.RedditDBHelper` de tipo `SQLiteOpenHelper`
+ * Solo almacena los últimos 50 posts. El resto deben borrarse.
+3. Los _thumbnails/preview_ a medida que se descargan deben también almacenarse. Recordar que pueden almacenarse como un arreglo de bytes:
+
+```Java
+   public static byte[] getBytes(Bitmap bitmap)
+   {
+        ByteArrayOutputStream stream=new ByteArrayOutputStream();
+        bitmap.compress(CompressFormat.JPEG,0, stream);
+        return stream.toByteArray();
+   }
+   public static Bitmap getImage(byte[] image)
+   {
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
+   }
+```
 
 ## Condiciones generales de entrega
 
+* **No deben emplearse frameworks que no sean los provistos oficialmente por la SDK de Android**
 * Se debe trabajar en un repositorio GIT propio. Mayor información en: [Git-Basics-Working-with-Remotes](https://git-scm.com/book/en/v2/Git-Basics-Working-with-Remotes)
 * La entrega consistirá en indicar en que TAG fue subido el mismo 
 * No debe contener carpetas/archivos autogenerados
 * Debe compilar. De lo contrario no será considerada como una entrega valida
 * Debe desarrollarse usando Android Studio 2.2 (o cualquier versión superior del canal estable)
 * Conservar Minimum SDK: API Level 15 y Target SDK: API Level 23 
+
+## Licencia
+
+* [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode)
+
+
