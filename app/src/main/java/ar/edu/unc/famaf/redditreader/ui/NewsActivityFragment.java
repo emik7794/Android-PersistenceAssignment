@@ -15,6 +15,7 @@ import java.util.List;
 
 import ar.edu.unc.famaf.redditreader.R;
 import ar.edu.unc.famaf.redditreader.backend.GetTopPostsTask;
+import ar.edu.unc.famaf.redditreader.backend.RedditDBHelper;
 import ar.edu.unc.famaf.redditreader.model.PostModel;
 
 
@@ -34,6 +35,9 @@ public class NewsActivityFragment extends Fragment {
         final ListView postsLV = (ListView) view.findViewById(R.id.postsLV);
 
         if (isNetworkAvailable()) {
+            RedditDBHelper dbReddit = new RedditDBHelper(getContext(), 1);
+            RedditDBHelper[] dbRedditArray = new RedditDBHelper[1];
+            dbRedditArray[0] = dbReddit;
             new GetTopPostsTask() {
                 @Override
                 protected void onPostExecute(List<PostModel> postModels) {
@@ -41,7 +45,7 @@ public class NewsActivityFragment extends Fragment {
                     PostAdapter postAdapter = new PostAdapter(getContext(), R.layout.post_row, postModels);
                     postsLV.setAdapter(postAdapter);
                 }
-            }.execute();
+            }.execute(dbRedditArray);
 
         } else {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
