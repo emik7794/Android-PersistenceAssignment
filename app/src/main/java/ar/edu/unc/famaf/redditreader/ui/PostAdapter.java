@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -32,7 +33,15 @@ public class PostAdapter extends ArrayAdapter<PostModel> {
         this.postList = postList;
     }
 
+    public static byte[] getBytes(Bitmap bitmap)
+    {
+        ByteArrayOutputStream stream=new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,0, stream);
+        return stream.toByteArray();
+    }
+
     protected class DownloadPreviewImageAsyncTask extends AsyncTask<URL, Integer, Bitmap> {
+
 
         @Override
         protected Bitmap doInBackground(URL... urls){
@@ -44,6 +53,7 @@ public class PostAdapter extends ArrayAdapter<PostModel> {
                 connection = (HttpURLConnection) url.openConnection();
                 InputStream is = connection.getInputStream();
                 bitmap = BitmapFactory.decodeStream(is,null,null);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -110,6 +120,8 @@ public class PostAdapter extends ArrayAdapter<PostModel> {
                 @Override
                 protected void onPostExecute(Bitmap bitmap) {
                     super.onPostExecute(bitmap);
+                    byte[] bytesPreviewImage = getBytes(bitmap); /////////////// ACA DEBO ALMACENAR LOS BYTES EN LA DB??
+                                                                /////////////// COMO ACCEDO A LA DB?
                     viewHolder.progressBar.setVisibility(ProgressBar.GONE);
                     if (bitmap != null) {
                         viewHolder.asyncPreviewIV.setImageBitmap(bitmap);

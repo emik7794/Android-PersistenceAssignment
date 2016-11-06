@@ -26,14 +26,14 @@ public class GetTopPostsTask extends AsyncTask<RedditDBHelper, Void, List<PostMo
 
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL
-                    ("https://www.reddit.com/top.json?limit=2").openConnection();
+                    ("https://www.reddit.com/top.json?limit=50").openConnection();
             conn.setRequestMethod("GET");
             input = conn.getInputStream();
             Parser parserJson = new Parser();
             Listing listing = parserJson.readJsonStream(input);
             if (listing != null) {
                 SQLiteDatabase db = dbreddit.getWritableDatabase();
-                dbreddit.onUpgrade(db, 1, 2);
+                dbreddit.onUpgrade(db, 1, 1);
                 for (int i = 0; i < listing.getChildren().size(); i++) {
                     ContentValues values = new ContentValues();
                     values.put(dbreddit.POST_TABLE_TITLE, listing.getChildren().get(i).getTitle());
@@ -45,22 +45,7 @@ public class GetTopPostsTask extends AsyncTask<RedditDBHelper, Void, List<PostMo
 
                 }
 
-                List<PostModel> postModelList = new ArrayList<>();
-                Cursor cursor = db.rawQuery("SELECT * FROM " + dbreddit.POST_TABLE, null);
-
-                if (cursor.moveToFirst()) {
-                    do {
-                        PostModel postModel = new PostModel();
-                        postModel.setTitle(cursor.getString(1));
-                        postModel.setAuthor(cursor.getString(2));
-                        postModel.setDate(cursor.getString(3));
-                        postModel.setComments(cursor.getLong(4));
-                        postModel.setUrlString(cursor.getString(5));
-                        postModelList.add(postModel);
-                    } while (cursor.moveToNext());
-                }
-
-                return postModelList;
+                return listing.getChildren();
 
             } else {
                 return null;
