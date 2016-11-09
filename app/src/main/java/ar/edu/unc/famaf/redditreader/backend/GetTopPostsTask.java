@@ -2,14 +2,12 @@ package ar.edu.unc.famaf.redditreader.backend;
 
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import ar.edu.unc.famaf.redditreader.model.Listing;
@@ -33,7 +31,7 @@ public class GetTopPostsTask extends AsyncTask<RedditDBHelper, Void, List<PostMo
             Listing listing = parserJson.readJsonStream(input);
             if (listing != null) {
                 SQLiteDatabase db = dbreddit.getWritableDatabase();
-                dbreddit.onUpgrade(db, 1, 1);
+                dbreddit.onUpgrade(db, RedditDBHelper.VERSION, RedditDBHelper.VERSION);
                 for (int i = 0; i < listing.getChildren().size(); i++) {
                     ContentValues values = new ContentValues();
                     values.put(dbreddit.POST_TABLE_TITLE, listing.getChildren().get(i).getTitle());

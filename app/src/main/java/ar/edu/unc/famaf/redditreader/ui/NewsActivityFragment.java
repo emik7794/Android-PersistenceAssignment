@@ -4,14 +4,20 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +43,7 @@ public class NewsActivityFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_news, container, false);
         final ListView postsLV = (ListView) view.findViewById(R.id.postsLV);
 
-        RedditDBHelper dbReddit = new RedditDBHelper(getContext(), 1);;
+        RedditDBHelper dbReddit = new RedditDBHelper(getContext());;
         SQLiteDatabase db = dbReddit.getWritableDatabase();
 
         if (isNetworkAvailable()) {
@@ -67,7 +73,9 @@ public class NewsActivityFragment extends Fragment {
                     postModel.setDate(cursor.getString(3));
                     postModel.setComments(cursor.getLong(4));
                     postModel.setUrlString(cursor.getString(5));
+                    Bitmap bitmap = getImage(cursor.getBlob(6));
                     postModelList.add(postModel);
+
                 } while (cursor.moveToNext());
             }
             PostAdapter postAdapter = new PostAdapter(getContext(), R.layout.post_row, postModelList);
@@ -85,6 +93,10 @@ public class NewsActivityFragment extends Fragment {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    public static Bitmap getImage(byte[] image)
+    {
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
+    }
 
 }
 
